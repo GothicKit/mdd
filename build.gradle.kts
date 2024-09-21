@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.gothickit:zenkit:1.0.2")
+    implementation("dev.gothickit:zenkit:1.3.0-java.1")
     implementation("net.java.dev.jna:jna:5.13.0")
     implementation("com.formdev:flatlaf:3.5.1")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
