@@ -28,11 +28,11 @@ public class TextBuilder implements SourceBuilder {
 
         for (String s : comment) {
             newline();
-            builder.append("&emsp;*&emsp;").append(s);
+            builder.append(" * ").append(s);
         }
 
         newline();
-        builder.append("&emsp;*/");
+        builder.append(" */");
 
         return this;
     }
@@ -93,13 +93,13 @@ public class TextBuilder implements SourceBuilder {
 
     @Override
     public TextBuilder newline() {
-        this.builder.append(indent).append(System.lineSeparator());
+        this.builder.append(System.lineSeparator()).append(indent);
         return this;
     }
 
     @Override
     public TextBuilder space() {
-        this.builder.append("&nbsp;");
+        this.builder.append(" ");
         return this;
     }
 

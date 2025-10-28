@@ -636,6 +636,34 @@ public class Decompiler {
                 orig.getLineStart(), orig.getLineCount(), orig.getCharStart(), orig.getCharCount()).split("\n");
     }
 
+    public String[] formatSymbolInfoText(@NotNull Decl decl) {
+        var orig = decl.getSymbol();
+        return String.format("Name: %s\n" +
+                             "Index: %d\n" +
+                             "Address: %d\n" +
+                             "Size: %d\n" +
+                             "Type: %s\n" +
+                             "Return Type: %s\n" +
+                             "Flags:\n" +
+                             "    Const: %b\n" +
+                             "    Member: %b\n" +
+                             "    External: %b\n" +
+                             "    Merged: %b\n" +
+                             "    Generated: %b\n" +
+                             "Parent Index: %d\n" +
+                             "Member Offset: %d\n" +
+                             "Class Size: %d\n" +
+                             "\n" +
+                             "File Index: %d\n" +
+                             "Line Start: %d\n" +
+                             "Line Count: %d\n" +
+                             "Char Start: %d\n" +
+                             "Char Count: %d\n", orig.getName(), orig.getIndex(), orig.getAddress(), orig.getSize(), orig.getType(), orig.getReturnType(),
+                orig.isConst(), orig.isMember(), orig.isExternal(), orig.isMerged(), orig.isGenerated(),
+                orig.getParent(), orig.getOffsetAsMember(), orig.getClassSize(), orig.getFileIndex(),
+                orig.getLineStart(), orig.getLineCount(), orig.getCharStart(), orig.getCharCount()).split("\n");
+    }
+
     public void setOptions(DecompilerOptions decompilerOptions) {
         this.options = decompilerOptions;
 

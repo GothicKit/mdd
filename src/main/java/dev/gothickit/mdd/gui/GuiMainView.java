@@ -100,7 +100,7 @@ public class GuiMainView extends JSplitPane {
 
             try {
                 decompiler.decompileCode(decl);
-                builder.commentMultiline(decompiler.formatSymbolInfo(decl)).newline().syntax(decl).text(";").newline().newline();
+                builder.commentMultiline(decompiler.formatSymbolInfoText(decl)).newline().syntax(decl).text(";").newline().newline();
             } catch (Exception e) {
                 e.printStackTrace();
             }
