@@ -14,6 +14,10 @@ public class FunctionReferenceExpr implements Expression {
         this.function = function;
     }
 
+    public FunctionDecl getFunction() {
+        return function;
+    }
+
     @Override
     public void visit(@NotNull Consumer<@NotNull Code> consumer) {
         consumer.accept(this);

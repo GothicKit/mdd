@@ -14,6 +14,10 @@ public class ReturnStmt implements Code {
         this.value = value;
     }
 
+    public Expression getValue() {
+        return value;
+    }
+
     @Override
     public void getSource(SourceBuilder builder) {
         if (value != null) {

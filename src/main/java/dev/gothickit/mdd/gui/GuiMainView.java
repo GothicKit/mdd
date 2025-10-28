@@ -2,15 +2,18 @@
 // SPDX-License-Identifier: MIT-Modern-Variant
 package dev.gothickit.mdd.gui;
 
+import com.google.gson.stream.JsonWriter;
 import dev.gothickit.mdd.cst.Decl;
 import dev.gothickit.mdd.decompiler.Decompiler;
 import dev.gothickit.mdd.decompiler.DecompilerOptions;
+import dev.gothickit.mdd.output.JsonBuilder;
 import dev.gothickit.mdd.output.TextBuilder;
 import dev.gothickit.zenkit.daedalus.DaedalusScript;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -72,6 +75,45 @@ public class GuiMainView extends JSplitPane {
     private void onSymbolSelected(final int id) {
         var decl = decompiler.decompileDecl(id);
         onSymbolSelected(decl);
+    }
+
+    public void exportScriptFilesToJson(final @NotNull File path) throws IOException {
+        if (!path.getParentFile().exists()) {
+            path.getParentFile().mkdirs();
+        }
+
+        var symbols = decompiler.getTopLevelSymbols();
+
+        ProgressMonitor progressBar = new ProgressMonitor(this, "Exporting Script", "", 1, symbols.size() * 2);
+        progressBar.setNote("Decompiling Symbols ...");
+        int i = 1;
+
+        try (FileWriter writer = new FileWriter(path)) {
+            var jw = new JsonWriter(writer);
+            var builder = new JsonBuilder(jw);
+            jw.beginArray();
+
+            for (var decl : symbols) {
+                if (progressBar.isCanceled()) {
+                    return;
+                }
+
+                if (decl.getName().startsWith("$")) {
+                    continue;
+                }
+
+                decompiler.decompileCode(decl);
+                builder.apply(decl);
+
+                progressBar.setProgress(i + 1);
+                i += 1;
+            }
+
+            jw.endArray();
+        }
+
+        progressBar.setNote("Done.");
+        progressBar.close();
     }
 
     public void exportScriptFiles(final @NotNull File path) throws IOException {

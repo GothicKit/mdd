@@ -49,7 +49,7 @@ public class Main {
         openItem.setMnemonic('O');
         openItem.setAccelerator(KeyStroke.getKeyStroke('O', InputEvent.CTRL_DOWN_MASK));
 
-        var exportItem = new JMenuItem("Export");
+        var exportItem = new JMenuItem("Export Source");
         exportItem.setMnemonic('E');
         exportItem.setEnabled(false);
         exportItem.setAccelerator(KeyStroke.getKeyStroke('E', InputEvent.CTRL_DOWN_MASK));
@@ -74,8 +74,34 @@ public class Main {
             }
         });
 
+        var exportJsonItem = new JMenuItem("Export JSON");
+        exportJsonItem.setMnemonic('J');
+        exportJsonItem.setEnabled(false);
+        exportJsonItem.setAccelerator(KeyStroke.getKeyStroke('J', InputEvent.CTRL_DOWN_MASK));
+        exportJsonItem.addActionListener(e -> {
+            var fc = new JFileChooser();
+            fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fc.setMultiSelectionEnabled(false);
+            fc.setDialogTitle("Export JSON");
+            fc.setApproveButtonText("Export");
+            fc.setDialogType(JFileChooser.SAVE_DIALOG);
+
+            var result = fc.showSaveDialog(mainView);
+            if (result != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+
+            try {
+                mainView.exportScriptFilesToJson(fc.getSelectedFile());
+            } catch (IOException ex) {
+                showErrorMessage(ex);
+                throw new RuntimeException(ex);
+            }
+        });
+
         fileMenu.add(openItem);
         fileMenu.add(exportItem);
+        fileMenu.add(exportJsonItem);
         menuBar.add(fileMenu);
 
         var fc = new JFileChooser();
@@ -98,11 +124,13 @@ public class Main {
             }
 
             exportItem.setEnabled(true);
+            exportJsonItem.setEnabled(true);
         });
 
         var encodingMenu = createEncodingMenu(encoding -> {
             mainView.unloadScript();
             exportItem.setEnabled(false);
+            exportJsonItem.setEnabled(false);
 
             ZenKit.unload();
             ZenKit.load(encoding);
@@ -113,6 +141,7 @@ public class Main {
                 throw new RuntimeException(ex);
             }
             exportItem.setEnabled(true);
+            exportJsonItem.setEnabled(true);
         });
 
         fileMenu.add(encodingMenu);
@@ -125,6 +154,7 @@ public class Main {
                 mainView.loadAndShowScript(new File(args[0]));
                 fc.setSelectedFile(new File(args[0]));
                 exportItem.setEnabled(true);
+                exportJsonItem.setEnabled(true);
             } catch (IOException ex) {
                 showErrorMessage(ex);
                 throw new RuntimeException(ex);
@@ -157,6 +187,7 @@ public class Main {
                         mainView.loadAndShowScript(droppedFiles.get(0));
                         fc.setSelectedFile(droppedFiles.get(0));
                         exportItem.setEnabled(true);
+                        exportJsonItem.setEnabled(true);
                     } catch (IOException ex) {
                         showErrorMessage(ex);
                         throw new RuntimeException(ex);
