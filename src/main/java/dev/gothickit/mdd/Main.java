@@ -3,6 +3,7 @@
 package dev.gothickit.mdd;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.icons.FlatSearchIcon;
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
 import dev.gothickit.mdd.decompiler.DecompilerOptions;
 import dev.gothickit.mdd.gui.GuiMainView;
@@ -74,8 +75,35 @@ public class Main {
             }
         });
 
+        var gotoItem = new JMenuItem("Go To", new FlatSearchIcon());
+        gotoItem.setMnemonic('G');
+        gotoItem.setEnabled(false);
+        gotoItem.setAccelerator(KeyStroke.getKeyStroke('G', InputEvent.CTRL_DOWN_MASK));
+		gotoItem.addActionListener(e -> {
+			String s = (String) JOptionPane.showInputDialog(mainView, "Go to symbol:", "Go To", JOptionPane.QUESTION_MESSAGE, new FlatSearchIcon(), null, null);
+			if (s == null || s.length() == 0) return;
+			
+			if (s.toLowerCase().startsWith("0x")) {
+				try {
+					int index = Integer.parseInt(s.substring(2), 16);
+					mainView.onSymbolSelected(index);
+					return;
+				} catch (Exception ignored) {}
+			}
+
+
+			try {
+				int index = Integer.parseInt(s);
+				mainView.onSymbolSelected(index);
+				return;
+			} catch (Exception ignored) {}
+			
+			mainView.onSymbolSelected(s);
+		});
+
         fileMenu.add(openItem);
         fileMenu.add(exportItem);
+        fileMenu.add(gotoItem);
         menuBar.add(fileMenu);
 
         var fc = new JFileChooser();
@@ -98,11 +126,13 @@ public class Main {
             }
 
             exportItem.setEnabled(true);
+            gotoItem.setEnabled(true);
         });
 
         var encodingMenu = createEncodingMenu(encoding -> {
             mainView.unloadScript();
             exportItem.setEnabled(false);
+            gotoItem.setEnabled(false);
 
             ZenKit.unload();
             ZenKit.load(encoding);
@@ -113,6 +143,7 @@ public class Main {
                 throw new RuntimeException(ex);
             }
             exportItem.setEnabled(true);
+            gotoItem.setEnabled(true);
         });
 
         fileMenu.add(encodingMenu);
@@ -157,6 +188,7 @@ public class Main {
                         mainView.loadAndShowScript(droppedFiles.get(0));
                         fc.setSelectedFile(droppedFiles.get(0));
                         exportItem.setEnabled(true);
+                        gotoItem.setEnabled(true);
                     } catch (IOException ex) {
                         showErrorMessage(ex);
                         throw new RuntimeException(ex);

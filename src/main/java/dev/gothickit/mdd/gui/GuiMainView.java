@@ -59,7 +59,7 @@ public class GuiMainView extends JSplitPane {
         this.disassemblerView.clear();
     }
 
-    private void onSymbolSelected(final Decl decl) {
+    public void onSymbolSelected(final Decl decl) {
         if (decl == null) {
             return;
         }
@@ -69,8 +69,16 @@ public class GuiMainView extends JSplitPane {
         selected = decl;
     }
 
-    private void onSymbolSelected(final int id) {
+    public void onSymbolSelected(final int id) {
         var decl = decompiler.decompileDecl(id);
+        onSymbolSelected(decl);
+    }
+
+    public void onSymbolSelected(final String name) {
+		var sym = script.getSymbolByName(name);
+		if (sym == null) return;
+
+        var decl = decompiler.decompileDecl(sym.getIndex());
         onSymbolSelected(decl);
     }
 
